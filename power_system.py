@@ -26,13 +26,11 @@ class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
         return matrix
 
     def admittance_matrix_0(self):
-        matrix = self.admittance_matrix()
+        matrix = self.admittance_matrix() / 3
         for bus in self.buses:
-            y = 0
             # Loads are solidly grounded.
-            # Y_L0 = |V|^2 / S*
-            if bus.power_consumed != 0:
-                y += np.conjugate(bus.power_consumed) / np.abs(bus.voltage) ** 2
+            # Y_L0 = S* / |V|^2
+            y = np.conjugate(bus.power_consumed) / np.abs(bus.voltage) ** 2
 
             # Y_G0 = 1 / (Z_0 + 3Z_n)
             if bus.generator_impedance_0 != 0 and bus.generator_impedance_neutral != np.inf:
@@ -45,10 +43,8 @@ class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
     def admittance_matrix_1(self):
         matrix = self.admittance_matrix()
         for bus in self.buses:
-            y = 0
-            # Y_L1 = |V|^2 / S*
-            if bus.power_consumed != 0:
-                y += bus.power_consumed / np.abs(bus.voltage) ** 2
+            # Y_L1 = S* / |V|^2
+            y = np.conjugate(bus.power_consumed) / np.abs(bus.voltage) ** 2
 
             # Y_G1 = 1 / Z_1
             if bus.generator_impedance_1 != 0:
@@ -61,10 +57,8 @@ class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
     def admittance_matrix_2(self):
         matrix = self.admittance_matrix()
         for bus in self.buses:
-            y = 0
-            # Y_L2 = |V|^2 / S*
-            if bus.power_consumed != 0:
-                y += bus.power_consumed / np.abs(bus.voltage) ** 2
+            # Y_L2 = S* / |V|^2
+            y = np.conjugate(bus.power_consumed) / np.abs(bus.voltage) ** 2
 
             # Y_G2 = 1 / Z_2
             if bus.generator_impedance_2 != 0:

@@ -1,9 +1,10 @@
 import argparse
 import power_system_builder
 
-DEFAULT_INPUT_WORKBOOK = 'data/CHW1Data.xlsx'
+DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
 DEFAULT_BUS_DATA_WORKSHEET_NAME = 'BusData'
 DEFAULT_LINE_DATA_WORKSHEET_NAME = 'LineData'
+DEFAULT_NEUTRAL_REACTANCE = 0
 
 
 def parse_arguments():
@@ -15,6 +16,8 @@ def parse_arguments():
                        help='The name of the worksheet containing bus data.')
     group.add_argument('--line_data_worksheet', default=DEFAULT_LINE_DATA_WORKSHEET_NAME,
                        help='The name of the worksheet containing line data.')
+    group.add_argument('--neutral_reactance', type=float, default=DEFAULT_NEUTRAL_REACTANCE,
+                       help='The per unit neutral reactance.')
 
     group = parser.add_argument_group('fault')
     group.add_argument('--fault_type', required=True, choices=['3p', 'slg', 'll', 'dlg'], help='The fault type.')
@@ -26,11 +29,15 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
+    neutral_impedance = 1j * args.neutral_reactance
 
     builder = power_system_builder.ExcelPowerSystemBuilder(
-        args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet)
+        args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, neutral_impedance)
     system = builder.build_system()
+
     print(system.admittance_matrix_0())
+    print(system.admittance_matrix_1())
+    print(system.admittance_matrix_2())
 
 
 if __name__ == '__main__':

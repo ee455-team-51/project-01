@@ -2,18 +2,13 @@ import numpy as np
 import openpyxl
 import power_system
 
-FLAT_START_VOLTAGE = 1 + 0j
-DEFAULT_BUS_DATA_WORKSHEET_NAME = 'BusData'
-DEFAULT_LINE_DATA_WORKSHEET_NAME = 'LineData'
-DEFAULT_POWER_BASE = 100
-
 
 class ExcelPowerSystemBuilder:
-    def __init__(self, filename, bus_data_worksheet_name=DEFAULT_BUS_DATA_WORKSHEET_NAME,
-                 line_data_worksheet_name=DEFAULT_LINE_DATA_WORKSHEET_NAME):
+    def __init__(self, filename, bus_data_worksheet_name, line_data_worksheet_name, neutral_impedance):
         self._workbook = openpyxl.load_workbook(filename, read_only=True)
         self._bus_data_worksheet = self._workbook[bus_data_worksheet_name]
         self._line_data_worksheet = self._workbook[line_data_worksheet_name]
+        self._neutral_impedance = neutral_impedance
 
     def build_buses(self):
         result = []
@@ -28,7 +23,7 @@ class ExcelPowerSystemBuilder:
             gen_z0 = 1j * row[6].value or 0j
             gen_z1 = 1j * row[4].value or 0j
             gen_z2 = 1j * row[5].value or 0j
-            gen_zn = 0j if row[7].value == 1 else np.inf
+            gen_zn = self._neutral_impedance if row[7].value == 1 else np.inf
             voltage_magnitude = row[8].value
             voltage_angle = row[9].value
             voltage = voltage_magnitude * np.exp(1j * np.deg2rad(voltage_angle))
