@@ -29,10 +29,10 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    neutral_impedance = 1j * args.neutral_reactance
+    generator_neutral_impedance = 1j * args.generator_neutral_reactance
 
     builder = power_system_builder.ExcelPowerSystemBuilder(
-        args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, neutral_impedance)
+        args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
 
     print(system.admittance_matrix_0())

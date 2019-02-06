@@ -8,7 +8,7 @@ class ExcelPowerSystemBuilder:
         self._workbook = openpyxl.load_workbook(filename, read_only=True)
         self._bus_data_worksheet = self._workbook[bus_data_worksheet_name]
         self._line_data_worksheet = self._workbook[line_data_worksheet_name]
-        self._neutral_impedance = generator_neutral_impedance
+        self._generator_neutral_impedance = generator_neutral_impedance
 
     def build_buses(self):
         result = []
@@ -19,16 +19,20 @@ class ExcelPowerSystemBuilder:
 
             p_load = row[1].value or 0
             q_load = row[2].value or 0
-            p_generator = row[3].value or 0
+
             gen_z0 = 1j * row[6].value or 0j
             gen_z1 = 1j * row[4].value or 0j
             gen_z2 = 1j * row[5].value or 0j
-            gen_zn = self._neutral_impedance if row[7].value == 1 else np.inf
+            gen_zn = self._generator_neutral_impedance if row[7].value == 1 else np.inf
+
             voltage_magnitude = row[8].value
             voltage_angle = row[9].value
             voltage = voltage_magnitude * np.exp(1j * np.deg2rad(voltage_angle))
-            result.append(power_system.Bus(
-                bus_number, p_load + 1j * q_load, p_generator, voltage, gen_z0, gen_z1, gen_z2, gen_zn))
+
+            # Y_load = S* / |V|^2
+            load_admittance = (p_load - 1j * q_load) / np.abs(voltage) ** 2
+
+            result.append(power_system.Bus(bus_number, voltage, load_admittance, gen_z0, gen_z1, gen_z2, gen_zn))
 
         return result
 
