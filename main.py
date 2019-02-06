@@ -38,7 +38,9 @@ def main():
 
     fault_analyzer = fault_analyzer_builder.FaultAnalyzerBuilder.build(
         system, args.fault_type, args.fault_bus, args.fault_impedance)
-    print(fault_analyzer.phase_a_current())
+    print('Phase A Current: {:.3f} pu'.format(fault_analyzer.phase_a_current()))
+    print('Phase B Current: {:.3f} pu'.format(fault_analyzer.phase_b_current()))
+    print('Phase C Current: {:.3f} pu'.format(fault_analyzer.phase_c_current()))
 
 
 if __name__ == '__main__':
