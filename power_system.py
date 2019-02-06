@@ -1,18 +1,16 @@
 import collections
-import numpy
+import numpy as np
 
 Line = collections.namedtuple('Line', ['source', 'destination', 'distributed_impedance', 'shunt_admittance'])
 
 Bus = collections.namedtuple('Bus',
-                             ['number', 'active_power_consumed', 'reactive_power_consumed', 'active_power_generated',
-                              'voltage'])
+                             ['number', 'power_consumed', 'power_generated', 'voltage', 'generator_impedance_0',
+                              'generator_impedance_1', 'generator_impedance_2', 'generator_impedance_neutral'])
 
 
 class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
     def admittance_matrix(self):
-        # TODO(kjiwa): Include generator impedances.
-        # TODO(kjiwa): Create zero, positive, and negative sequence matrices.
-        matrix = numpy.zeros((len(self.buses), len(self.buses))) * 1j
+        matrix = np.zeros((len(self.buses), len(self.buses))) * 1j
         for line in self.lines:
             src = line.source - 1
             dst = line.destination - 1
@@ -24,5 +22,54 @@ class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
             matrix[dst][src] -= y_distributed
             matrix[src][src] += y_distributed + y_shunt
             matrix[dst][dst] += y_distributed + y_shunt
+
+        return matrix
+
+    def admittance_matrix_0(self):
+        matrix = self.admittance_matrix()
+        for bus in self.buses:
+            y = 0
+            # Loads are solidly grounded.
+            # Y_L0 = |V|^2 / S*
+            if bus.power_consumed != 0:
+                y += np.conjugate(bus.power_consumed) / np.abs(bus.voltage) ** 2
+
+            # Y_G0 = 1 / (Z_0 + 3Z_n)
+            if bus.generator_impedance_0 != 0 and bus.generator_impedance_neutral != np.inf:
+                y += 1 / (bus.generator_impedance_0 + 3 * bus.generator_impedance_neutral)
+
+            matrix[bus.number - 1][bus.number - 1] += y
+
+        return matrix
+
+    def admittance_matrix_1(self):
+        matrix = self.admittance_matrix()
+        for bus in self.buses:
+            y = 0
+            # Y_L1 = |V|^2 / S*
+            if bus.power_consumed != 0:
+                y += bus.power_consumed / np.abs(bus.voltage) ** 2
+
+            # Y_G1 = 1 / Z_1
+            if bus.generator_impedance_1 != 0:
+                y += 1 / bus.generator_impedance_1
+
+            matrix[bus.number - 1][bus.number - 1] += y
+
+        return matrix
+
+    def admittance_matrix_2(self):
+        matrix = self.admittance_matrix()
+        for bus in self.buses:
+            y = 0
+            # Y_L2 = |V|^2 / S*
+            if bus.power_consumed != 0:
+                y += bus.power_consumed / np.abs(bus.voltage) ** 2
+
+            # Y_G2 = 1 / Z_2
+            if bus.generator_impedance_2 != 0:
+                y += 1 / bus.generator_impedance_2
+
+            matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix

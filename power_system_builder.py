@@ -22,14 +22,18 @@ class ExcelPowerSystemBuilder:
             if not bus_number:
                 break
 
-            # TODO(kjiwa): Read and store generator impedances.
             p_load = row[1].value or 0
             q_load = row[2].value or 0
             p_generator = row[3].value or 0
+            gen_z0 = 1j * row[6].value or 0j
+            gen_z1 = 1j * row[4].value or 0j
+            gen_z2 = 1j * row[5].value or 0j
+            gen_zn = 0j if row[7].value == 1 else np.inf
             voltage_magnitude = row[8].value
             voltage_angle = row[9].value
             voltage = voltage_magnitude * np.exp(1j * np.deg2rad(voltage_angle))
-            result.append(power_system.Bus(bus_number, p_load, q_load, p_generator, voltage))
+            result.append(power_system.Bus(
+                bus_number, p_load + 1j * q_load, p_generator, voltage, gen_z0, gen_z1, gen_z2, gen_zn))
 
         return result
 
