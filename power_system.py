@@ -1,14 +1,31 @@
-import collections
+import dataclasses
 import numpy as np
 
-Line = collections.namedtuple('Line', ['source', 'destination', 'distributed_impedance', 'shunt_admittance'])
 
-Bus = collections.namedtuple('Bus',
-                             ['number', 'voltage', 'load_admittance', 'generator_impedance_0', 'generator_impedance_1',
-                              'generator_impedance_2', 'generator_impedance_neutral'])
+@dataclasses.dataclass
+class Line:
+    source: int
+    destination: int
+    distributed_impedance: complex
+    shunt_admittance: complex
 
 
-class PowerSystem(collections.namedtuple('PowerSystem', ['buses', 'lines'])):
+@dataclasses.dataclass()
+class Bus:
+    number: int
+    voltage: complex
+    load_admittance: complex
+    generator_impedance_0: complex
+    generator_impedance_1: complex
+    generator_impedance_2: complex
+    generator_impedance_neutral: complex
+
+
+class PowerSystem:
+    def __init__(self, buses, lines):
+        self.buses = buses
+        self.lines = lines
+
     def admittance_matrix(self):
         matrix = np.zeros((len(self.buses), len(self.buses))) * 1j
         for line in self.lines:

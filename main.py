@@ -1,4 +1,5 @@
 import argparse
+import fault_analyzer_builder
 import power_system_builder
 
 DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
@@ -35,9 +36,9 @@ def main():
         args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
 
-    print(system.admittance_matrix_0())
-    print(system.admittance_matrix_1())
-    print(system.admittance_matrix_2())
+    fault_analyzer = fault_analyzer_builder.FaultAnalyzerBuilder.build(
+        system, args.fault_type, args.fault_bus, args.fault_impedance)
+    print(fault_analyzer.phase_a_current())
 
 
 if __name__ == '__main__':
