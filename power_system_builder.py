@@ -4,11 +4,11 @@ import power_system
 
 
 class ExcelPowerSystemBuilder:
-    def __init__(self, filename, bus_data_worksheet_name, line_data_worksheet_name, neutral_impedance):
+    def __init__(self, filename, bus_data_worksheet_name, line_data_worksheet_name, generator_neutral_impedance):
         self._workbook = openpyxl.load_workbook(filename, read_only=True)
         self._bus_data_worksheet = self._workbook[bus_data_worksheet_name]
         self._line_data_worksheet = self._workbook[line_data_worksheet_name]
-        self._neutral_impedance = neutral_impedance
+        self._neutral_impedance = generator_neutral_impedance
 
     def build_buses(self):
         result = []

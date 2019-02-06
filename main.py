@@ -4,7 +4,7 @@ import power_system_builder
 DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
 DEFAULT_BUS_DATA_WORKSHEET_NAME = 'BusData'
 DEFAULT_LINE_DATA_WORKSHEET_NAME = 'LineData'
-DEFAULT_NEUTRAL_REACTANCE = 0
+DEFAULT_GENERATOR_NEUTRAL_REACTANCE = 0
 
 
 def parse_arguments():
@@ -16,8 +16,8 @@ def parse_arguments():
                        help='The name of the worksheet containing bus data.')
     group.add_argument('--line_data_worksheet', default=DEFAULT_LINE_DATA_WORKSHEET_NAME,
                        help='The name of the worksheet containing line data.')
-    group.add_argument('--neutral_reactance', type=float, default=DEFAULT_NEUTRAL_REACTANCE,
-                       help='The per unit neutral reactance.')
+    group.add_argument('--generator_neutral_reactance', type=float, default=DEFAULT_GENERATOR_NEUTRAL_REACTANCE,
+                       help='The per unit neutral reactance of the generators.')
 
     group = parser.add_argument_group('fault')
     group.add_argument('--fault_type', required=True, choices=['3p', 'slg', 'll', 'dlg'], help='The fault type.')
