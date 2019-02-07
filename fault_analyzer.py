@@ -1,5 +1,7 @@
 import numpy as np
 
+A = np.exp(1j * np.deg2rad(120))
+
 
 class FaultAnalyzer:
     def __init__(self, system, fault_bus, fault_impedance):
@@ -23,12 +25,10 @@ class ThreePhaseFaultAnalyzer(FaultAnalyzer):
         return self.positive_sequence_current()
 
     def phase_b_current(self):
-        a = np.exp(1j * np.deg2rad(120))
-        return a ** 2 * self.positive_sequence_current()
+        return A ** 2 * self.positive_sequence_current()
 
     def phase_c_current(self):
-        a = np.exp(1j * np.deg2rad(120))
-        return a * self.positive_sequence_current()
+        return A * self.positive_sequence_current()
 
 
 class SingleLineToGroundFaultAnalyzer(FaultAnalyzer):
