@@ -1,9 +1,22 @@
 import numpy as np
 
 A = np.exp(1j * np.deg2rad(120))
+THREE_PHASE_FAULT_TYPE = '3p'
+SINGLE_LINE_TO_GROUND_FAULT_TYPE = 'slg'
 
 
-class FaultAnalyzer:
+class PowerSystemFaultBuilder:
+    @staticmethod
+    def build(system, fault_type, fault_bus, fault_impedance):
+        if fault_type == THREE_PHASE_FAULT_TYPE:
+            return ThreePhaseFault(system, fault_bus, fault_impedance)
+        elif fault_type == SINGLE_LINE_TO_GROUND_FAULT_TYPE:
+            return SingleLineToGroundFault(system, fault_bus, fault_impedance)
+
+        return None
+
+
+class Fault:
     def __init__(self, system, fault_bus, fault_impedance):
         self._system = system
         self._fault_bus = fault_bus
@@ -13,7 +26,7 @@ class FaultAnalyzer:
         self._impedance_matrix_2 = np.linalg.inv(system.admittance_matrix_2())
 
 
-class ThreePhaseFaultAnalyzer(FaultAnalyzer):
+class ThreePhaseFault(Fault):
     def sequence_current_0(self):
         return 0j
 
@@ -37,7 +50,7 @@ class ThreePhaseFaultAnalyzer(FaultAnalyzer):
         return A * self.sequence_current_1()
 
 
-class SingleLineToGroundFaultAnalyzer(FaultAnalyzer):
+class SingleLineToGroundFault(Fault):
     def sequence_current_0(self):
         n = self._fault_bus - 1
         v_f = self._system.buses[n].voltage
