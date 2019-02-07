@@ -1,13 +1,17 @@
 import numpy as np
 
 
-class ThreePhaseFaultAnalyzer:
+class FaultAnalyzer:
     def __init__(self, system, fault_bus, fault_impedance):
         self._system = system
         self._fault_bus = fault_bus
         self._fault_impedance = fault_impedance
+        self._impedance_matrix_0 = np.linalg.inv(system.admittance_matrix_0())
         self._impedance_matrix_1 = np.linalg.inv(system.admittance_matrix_1())
+        self._impedance_matrix_2 = np.linalg.inv(system.admittance_matrix_2())
 
+
+class ThreePhaseFaultAnalyzer(FaultAnalyzer):
     def positive_sequence_current(self):
         n = self._fault_bus - 1
         V_F = self._system.buses[n].voltage
@@ -27,15 +31,7 @@ class ThreePhaseFaultAnalyzer:
         return a * self.positive_sequence_current()
 
 
-class SingleLineToGroundFaultAnalyzer:
-    def __init__(self, system, fault_bus, fault_impedance):
-        self._system = system
-        self._fault_bus = fault_bus
-        self._fault_impedance = fault_impedance
-        self._impedance_matrix_0 = np.linalg.inv(system.admittance_matrix_0())
-        self._impedance_matrix_1 = np.linalg.inv(system.admittance_matrix_1())
-        self._impedance_matrix_2 = np.linalg.inv(system.admittance_matrix_2())
-
+class SingleLineToGroundFaultAnalyzer(FaultAnalyzer):
     def zero_sequence_current(self):
         n = self._fault_bus - 1
         V_F = self._system.buses[n].voltage
