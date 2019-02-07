@@ -37,11 +37,11 @@ def main():
         args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
 
-    fault_analyzer = power_system_fault.PowerSystemFaultBuilder.build(
+    fault = power_system_fault.PowerSystemFaultBuilder.build(
         system, args.fault_type, args.fault_bus, args.fault_impedance)
-    print('Phase A Current: {:.3f} pu'.format(fault_analyzer.phase_current_a()))
-    print('Phase B Current: {:.3f} pu'.format(fault_analyzer.phase_current_b()))
-    print('Phase C Current: {:.3f} pu'.format(fault_analyzer.phase_current_c()))
+    print('Phase A Current: {:.3f} pu'.format(fault.phase_current_a()))
+    print('Phase B Current: {:.3f} pu'.format(fault.phase_current_b()))
+    print('Phase C Current: {:.3f} pu'.format(fault.phase_current_c()))
 
 
 if __name__ == '__main__':
