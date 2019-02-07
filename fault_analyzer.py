@@ -14,25 +14,31 @@ class FaultAnalyzer:
 
 
 class ThreePhaseFaultAnalyzer(FaultAnalyzer):
-    def positive_sequence_current(self):
+    def sequence_current_0(self):
+        return 0j
+
+    def sequence_current_1(self):
         n = self._fault_bus - 1
         v_f = self._system.buses[n].voltage
         z_1 = self._impedance_matrix_1[n][n]
         z_f = self._fault_impedance
         return v_f / (z_1 + z_f)
 
-    def phase_a_current(self):
-        return self.positive_sequence_current()
+    def sequence_current_2(self):
+        return 0j
 
-    def phase_b_current(self):
-        return A ** 2 * self.positive_sequence_current()
+    def phase_current_a(self):
+        return self.sequence_current_1()
 
-    def phase_c_current(self):
-        return A * self.positive_sequence_current()
+    def phase_current_b(self):
+        return A ** 2 * self.sequence_current_1()
+
+    def phase_current_c(self):
+        return A * self.sequence_current_1()
 
 
 class SingleLineToGroundFaultAnalyzer(FaultAnalyzer):
-    def zero_sequence_current(self):
+    def sequence_current_0(self):
         n = self._fault_bus - 1
         v_f = self._system.buses[n].voltage
         z_0 = self._impedance_matrix_0[n][n]
@@ -40,11 +46,17 @@ class SingleLineToGroundFaultAnalyzer(FaultAnalyzer):
         z_2 = self._impedance_matrix_2[n][n]
         return v_f / (z_0 + z_1 + z_2 + 3 * self._fault_impedance)
 
-    def phase_a_current(self):
-        return 3 * self.zero_sequence_current()
+    def sequence_current_1(self):
+        return 0j
 
-    def phase_b_current(self):
-        return self.phase_a_current()
+    def sequence_current_2(self):
+        return 0j
 
-    def phase_c_current(self):
-        return self.phase_a_current()
+    def phase_current_a(self):
+        return 3 * self.sequence_current_0()
+
+    def phase_current_b(self):
+        return self.phase_current_a()
+
+    def phase_current_c(self):
+        return self.phase_current_a()

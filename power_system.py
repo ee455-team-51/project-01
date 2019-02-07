@@ -10,7 +10,7 @@ class Line:
     shunt_admittance: complex
 
 
-@dataclasses.dataclass()
+@dataclasses.dataclass
 class Bus:
     number: int
     voltage: complex

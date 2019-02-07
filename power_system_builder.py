@@ -17,20 +17,20 @@ class ExcelPowerSystemBuilder:
             if not bus_number:
                 break
 
-            p_load = row[1].value or 0
-            q_load = row[2].value or 0
-
-            gen_z0 = 1j * row[6].value or 0j
-            gen_z1 = 1j * row[4].value or 0j
-            gen_z2 = 1j * row[5].value or 0j
-            gen_zn = self._generator_neutral_impedance if row[7].value == 1 else np.inf
-
             voltage_magnitude = row[8].value
             voltage_angle = row[9].value
             voltage = voltage_magnitude * np.exp(1j * np.deg2rad(voltage_angle))
 
             # Y_load = S* / |V|^2
-            load_admittance = (p_load - 1j * q_load) / np.abs(voltage) ** 2
+            p_load = row[1].value or 0
+            q_load = row[2].value or 0
+            s_load = p_load + 1j * q_load
+            load_admittance = np.conjugate(s_load) / voltage_magnitude ** 2
+
+            gen_z0 = 1j * row[6].value or 0j
+            gen_z1 = 1j * row[4].value or 0j
+            gen_z2 = 1j * row[5].value or 0j
+            gen_zn = self._generator_neutral_impedance if row[7].value == 1 else np.inf
 
             result.append(power_system.Bus(bus_number, voltage, load_admittance, gen_z0, gen_z1, gen_z2, gen_zn))
 
