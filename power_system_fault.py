@@ -3,6 +3,8 @@ import numpy as np
 A = np.exp(1j * np.deg2rad(120))
 THREE_PHASE_FAULT_TYPE = '3p'
 SINGLE_LINE_TO_GROUND_FAULT_TYPE = 'slg'
+LINE_TO_LINE_FAULT_TYPE = 'll'
+DOUBLE_LINE_TO_GROUND_FAULT_TYPE = 'dlg'
 
 
 class PowerSystemFaultBuilder:
@@ -12,6 +14,10 @@ class PowerSystemFaultBuilder:
             return ThreePhaseFault(system, fault_bus, fault_impedance)
         elif fault_type == SINGLE_LINE_TO_GROUND_FAULT_TYPE:
             return SingleLineToGroundFault(system, fault_bus, fault_impedance)
+        elif fault_type == LINE_TO_LINE_FAULT_TYPE:
+            return LineToLineFault(system, fault_bus, fault_impedance)
+        elif fault_type == DOUBLE_LINE_TO_GROUND_FAULT_TYPE:
+            return DoubleLineToGroundFault(system, fault_bus, fault_impedance)
 
         return None
 
@@ -67,3 +73,48 @@ class SingleLineToGroundFault(Fault):
 
     def phase_current_c(self):
         return self.phase_current_a()
+
+
+class LineToLineFault(Fault):
+    def sequence_current_0(self):
+        return 0j
+
+    def sequence_current_1(self):
+        denominator = self._impedance_1 + self._impedance_2 + self.fault_impedance
+        return self._voltage / denominator
+
+    def sequence_current_2(self):
+        return -1 * self.sequence_current_1()
+
+    def phase_current_a(self):
+        return 0j
+
+    def phase_current_b(self):
+        return (A ** 2 - A) * self.sequence_current_1()
+
+    def phase_current_c(self):
+        return -1 * self.phase_current_b()
+
+
+class DoubleLineToGroundFault(Fault):
+    def sequence_current_0(self):
+        return (-1 * self.sequence_current_1()) - self.sequence_current_2()
+
+    def sequence_current_1(self):
+        denominator = self._impedance_1 + ((self._impedance_2 * (self._impedance_0 + 3 * self._fault_impedance)) /
+                                           (self._impedance_2 + self._impedance_0 + 3 * self._fault_impedance))
+        return self._voltage / denominator
+
+    def sequence_current_2(self):
+        current_divider = (self._impedance_0 + 3 * self._fault_impedance) / \
+                          (self._impedance_0 + 3 * self._fault_impedance + self._impedance_2)
+        return (-1 * self.sequence_current_1()) * current_divider
+
+    def phase_current_a(self):
+        return 0j
+
+    def phase_current_b(self):
+        return self.sequence_current_0() + A ** 2 * self.sequence_current_1() + A * self.sequence_current_2()
+
+    def phase_current_c(self):
+        return self.sequence_current_0() + A * self.sequence_current_1() + A ** 2 * self.sequence_current_2()

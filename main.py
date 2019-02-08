@@ -42,6 +42,9 @@ def main():
     print('Phase A Current: {:.3f} pu'.format(fault.phase_current_a()))
     print('Phase B Current: {:.3f} pu'.format(fault.phase_current_b()))
     print('Phase C Current: {:.3f} pu'.format(fault.phase_current_c()))
+    print('Sequence 0 Current: {:.3f} pu'.format(fault.sequence_current_0()))
+    print('Sequence 1 Current: {:.3f} pu'.format(fault.sequence_current_1()))
+    print('Sequence 2 Current: {:.3f} pu'.format(fault.sequence_current_2()))
 
 
 if __name__ == '__main__':
