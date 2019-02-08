@@ -21,7 +21,7 @@ class Fault:
         z_0 = np.linalg.inv(system.admittance_matrix_0())
         z_1 = np.linalg.inv(system.admittance_matrix_1())
         z_2 = np.linalg.inv(system.admittance_matrix_2())
-        self._voltage = system[fault_bus - 1].voltage
+        self._voltage = system.buses[fault_bus - 1].voltage
         self._impedance_0 = z_0[fault_bus - 1][fault_bus - 1]
         self._impedance_1 = z_1[fault_bus - 1][fault_bus - 1]
         self._impedance_2 = z_2[fault_bus - 1][fault_bus - 1]
