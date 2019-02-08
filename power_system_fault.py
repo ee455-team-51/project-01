@@ -80,7 +80,7 @@ class LineToLineFault(Fault):
         return 0j
 
     def sequence_current_1(self):
-        denominator = self._impedance_1 + self._impedance_2 + self.fault_impedance
+        denominator = self._impedance_1 + self._impedance_2 + self._fault_impedance
         return self._voltage / denominator
 
     def sequence_current_2(self):
