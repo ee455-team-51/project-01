@@ -48,7 +48,6 @@ class PowerSystem:
         for bus in self.buses:
             y = bus.load_admittance
             if bus.generator_impedance_0 != 0 and bus.generator_impedance_neutral != np.inf:
-                # Y_G0 = 1 / (Z_0 + 3Z_n)
                 y += 1 / (bus.generator_impedance_0 + 3 * bus.generator_impedance_neutral)
 
             matrix[bus.number - 1][bus.number - 1] += y
@@ -59,10 +58,7 @@ class PowerSystem:
         matrix = self.admittance_matrix()
         for bus in self.buses:
             y = bus.load_admittance
-            if bus.generator_impedance_1 != 0:
-                # Y_G1 = 1 / Z_1
-                y += 1 / bus.generator_impedance_1
-
+            y += 1 / bus.generator_impedance_1 if bus.generator_impedance_1 != 0 else 0
             matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix
@@ -71,10 +67,7 @@ class PowerSystem:
         matrix = self.admittance_matrix()
         for bus in self.buses:
             y = bus.load_admittance
-            if bus.generator_impedance_2 != 0:
-                # Y_G2 = 1 / Z_2
-                y += 1 / bus.generator_impedance_2
-
+            y += 1 / bus.generator_impedance_2 if bus.generator_impedance_2 != 0 else 0
             matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix
