@@ -24,8 +24,8 @@ class PowerSystemFaultBuilder:
 
 class Fault:
     def __init__(self, system, fault_bus_number, fault_impedance):
+        self.fault_bus_number = fault_bus_number
         self._system = system
-        self._fault_bus_number = fault_bus_number
         self._fault_impedance = fault_impedance
 
         self._prefault_voltage = system.buses[fault_bus_number - 1].voltage
@@ -56,18 +56,18 @@ class Fault:
 
     def bus_voltages_0(self):
         # E_k0 = -I_0 * z0_kn
-        return [-self.sequence_current_0() * self._impedance_matrix_0[bus.number - 1][self._fault_bus_number - 1]
+        return [-self.sequence_current_0() * self._impedance_matrix_0[bus.number - 1][self.fault_bus_number - 1]
                 for bus in self._system.buses]
 
     def bus_voltages_1(self):
         # E_k1 = V_Fk - I_1 * z1_kn
         return [self._system.buses[bus.number - 1].voltage
-                - self.sequence_current_1() * self._impedance_matrix_1[bus.number - 1][self._fault_bus_number - 1]
+                - self.sequence_current_1() * self._impedance_matrix_1[bus.number - 1][self.fault_bus_number - 1]
                 for bus in self._system.buses]
 
     def bus_voltages_2(self):
         # E_k2 = -I_2 * z2_kn
-        return [-self.sequence_current_2() * self._impedance_matrix_2[bus.number - 1][self._fault_bus_number - 1]
+        return [-self.sequence_current_2() * self._impedance_matrix_2[bus.number - 1][self.fault_bus_number - 1]
                 for bus in self._system.buses]
 
 

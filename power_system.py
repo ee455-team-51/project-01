@@ -20,9 +20,6 @@ class Bus:
     generator_impedance_2: complex
     generator_impedance_neutral: complex
 
-    def has_generator(self):
-        return self.generator_impedance_0 != 0 and self.generator_impedance_1 != 0 and self.generator_impedance_2 != 0
-
 
 class PowerSystem:
     def __init__(self, buses, lines):
