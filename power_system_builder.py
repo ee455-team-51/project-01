@@ -47,7 +47,7 @@ class ExcelPowerSystemBuilder:
             r_distributed = row[2].value or 0
             x_distributed = row[3].value or 0
             z_distributed = r_distributed + 1j * x_distributed
-            y_shunt = 1j * row[4].value or 0j
+            y_shunt = 2j * row[4].value or 0j  # multiply by 2 because input gives B / 2
 
             result.append(power_system.Line(source_bus_number, destination_bus_number, z_distributed, y_shunt))
 

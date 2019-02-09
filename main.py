@@ -2,6 +2,7 @@ import argparse
 
 import power_system_fault
 import power_system_builder
+import power_system_fault_reporter
 
 DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
 DEFAULT_BUS_DATA_WORKSHEET_NAME = 'BusData'
@@ -36,15 +37,11 @@ def main():
     builder = power_system_builder.ExcelPowerSystemBuilder(
         args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
-
     fault = power_system_fault.PowerSystemFaultBuilder.build(
         system, args.fault_type, args.fault_bus, args.fault_impedance)
-    print('Phase A Current: {:.3f} pu'.format(fault.phase_current_a()))
-    print('Phase B Current: {:.3f} pu'.format(fault.phase_current_b()))
-    print('Phase C Current: {:.3f} pu'.format(fault.phase_current_c()))
-    print('Sequence 0 Current: {:.3f} pu'.format(fault.sequence_current_0()))
-    print('Sequence 1 Current: {:.3f} pu'.format(fault.sequence_current_1()))
-    print('Sequence 2 Current: {:.3f} pu'.format(fault.sequence_current_2()))
+
+    print(power_system_fault_reporter.fault_current_report(fault))
+    print(power_system_fault_reporter.results_bus_report(system, fault, args.results_bus))
 
 
 if __name__ == '__main__':
