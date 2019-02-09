@@ -61,7 +61,8 @@ def results_bus_report(system, fault, results_bus_number):
 
         other = (line.destination if line.source == results_bus_number else line.source)
 
-        i_line0 = (e_k0 - bus_voltages_0[other - 1]) / (3 * line.distributed_impedance) + e_k0 * line.shunt_admittance / 2
+        i_line0 = ((e_k0 - bus_voltages_0[other - 1]) / (3 * line.distributed_impedance)
+                   + e_k0 * line.shunt_admittance / 2)
         i_line1 = (e_k1 - bus_voltages_1[other - 1]) / line.distributed_impedance + e_k1 * line.shunt_admittance / 2
         i_line2 = (e_k2 - bus_voltages_2[other - 1]) / line.distributed_impedance + e_k2 * line.shunt_admittance / 2
         i_gen0 += i_line0
