@@ -15,7 +15,6 @@ def phase_components(sequence_0, sequence_1, sequence_2):
 def fault_current_report(fault):
     out = io.StringIO()
     out.write('Fault Bus Report\n')
-    out.write('================\n')
     out.write('Phase A Current: {:.4f} pu\n'.format(np.abs(fault.phase_current_a())))
     out.write('Phase B Current: {:.4f} pu\n'.format(np.abs(fault.phase_current_b())))
     out.write('Phase C Current: {:.4f} pu\n'.format(np.abs(fault.phase_current_c())))
@@ -37,7 +36,6 @@ def results_bus_report(system, fault, results_bus_number):
     results_bus = system.buses[k]
 
     print('Bus {} Report'.format(results_bus_number))
-    print('=============')
     headers = ['Component', 'Phase A (pu)', 'Phase B (pu)', 'Phase C (pu)']
     table = []
 

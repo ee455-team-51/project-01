@@ -55,7 +55,7 @@ class Fault:
         raise NotImplementedError()
 
     def bus_voltages_0(self):
-        # E_k0 = -I_1 * z1_kn
+        # E_k0 = -I_0 * z0_kn
         return [-self.sequence_current_0() * self._impedance_matrix_0[bus.number - 1][self._fault_bus_number - 1]
                 for bus in self._system.buses]
 
@@ -66,7 +66,7 @@ class Fault:
                 for bus in self._system.buses]
 
     def bus_voltages_2(self):
-        # E_k2 = -I_1 * z2_kn
+        # E_k2 = -I_2 * z2_kn
         return [-self.sequence_current_2() * self._impedance_matrix_2[bus.number - 1][self._fault_bus_number - 1]
                 for bus in self._system.buses]
 
@@ -97,19 +97,19 @@ class SingleLineToGroundFault(Fault):
         return self._prefault_voltage / denominator
 
     def sequence_current_1(self):
-        return 0j
+        return self.sequence_current_0()
 
     def sequence_current_2(self):
-        return 0j
+        return self.sequence_current_0()
 
     def phase_current_a(self):
         return 3 * self.sequence_current_0()
 
     def phase_current_b(self):
-        return self.phase_current_a()
+        return 0j
 
     def phase_current_c(self):
-        return self.phase_current_a()
+        return 0j
 
 
 class LineToLineFault(Fault):
@@ -135,7 +135,8 @@ class LineToLineFault(Fault):
 
 class DoubleLineToGroundFault(Fault):
     def sequence_current_0(self):
-        return (-self.sequence_current_1()) - self.sequence_current_2()
+        current_divider = self._impedance_2 / (self._impedance_0 + 3 * self._fault_impedance + self._impedance_2)
+        return -self.sequence_current_1() * current_divider
 
     def sequence_current_1(self):
         denominator = self._impedance_1 + ((self._impedance_2 * (self._impedance_0 + 3 * self._fault_impedance))
@@ -143,9 +144,7 @@ class DoubleLineToGroundFault(Fault):
         return self._prefault_voltage / denominator
 
     def sequence_current_2(self):
-        current_divider = ((self._impedance_0 + 3 * self._fault_impedance)
-                           / (self._impedance_0 + 3 * self._fault_impedance + self._impedance_2))
-        return (-self.sequence_current_1()) * current_divider
+        return -self.sequence_current_1() - self.sequence_current_0()
 
     def phase_current_a(self):
         return 0j
