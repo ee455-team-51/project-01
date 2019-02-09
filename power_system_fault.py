@@ -60,8 +60,8 @@ class Fault:
                 for bus in self._system.buses]
 
     def bus_voltages_1(self):
-        # E_k1 = V_F - I_1 * z1_kn
-        return [self._prefault_voltage
+        # E_k1 = V_Fk - I_1 * z1_kn
+        return [self._system.buses[bus.number - 1].voltage
                 - self.sequence_current_1() * self._impedance_matrix_1[bus.number - 1][self._fault_bus_number - 1]
                 for bus in self._system.buses]
 
