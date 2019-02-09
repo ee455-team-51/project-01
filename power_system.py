@@ -20,6 +20,12 @@ class Bus:
     generator_impedance_2: complex
     generator_impedance_neutral: complex
 
+    def has_generator(self):
+        return self.generator_impedance_0 != 0 and self.generator_impedance_1 != 0 and self.generator_impedance_2 != 0
+
+    def has_load(self):
+        return self.load_admittance != 0
+
 
 class PowerSystem:
     def __init__(self, buses, lines):
@@ -47,9 +53,7 @@ class PowerSystem:
         matrix = self.admittance_matrix() / 3
         for bus in self.buses:
             y = bus.load_admittance
-            if bus.generator_impedance_0 != 0 and bus.generator_impedance_neutral != np.inf:
-                y += 1 / (bus.generator_impedance_0 + 3 * bus.generator_impedance_neutral)
-
+            y += 1 / (bus.generator_impedance_0 + 3 * bus.generator_impedance_neutral) if bus.has_generator() else 0
             matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix
@@ -58,7 +62,7 @@ class PowerSystem:
         matrix = self.admittance_matrix()
         for bus in self.buses:
             y = bus.load_admittance
-            y += 1 / bus.generator_impedance_1 if bus.generator_impedance_1 != 0 else 0
+            y += 1 / bus.generator_impedance_1 if bus.has_generator() else 0
             matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix
@@ -67,7 +71,7 @@ class PowerSystem:
         matrix = self.admittance_matrix()
         for bus in self.buses:
             y = bus.load_admittance
-            y += 1 / bus.generator_impedance_2 if bus.generator_impedance_2 != 0 else 0
+            y += 1 / bus.generator_impedance_2 if bus.has_generator() else 0
             matrix[bus.number - 1][bus.number - 1] += y
 
         return matrix

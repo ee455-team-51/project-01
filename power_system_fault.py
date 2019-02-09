@@ -11,23 +11,23 @@ class PowerSystemFaultBuilder:
     @staticmethod
     def build(system, fault_type, fault_bus, fault_impedance):
         if fault_type == THREE_PHASE_FAULT_TYPE:
-            return ThreePhaseFault(system, fault_bus, fault_impedance)
+            return ThreePhaseFault(system, fault_bus, fault_type, fault_impedance)
         elif fault_type == SINGLE_LINE_TO_GROUND_FAULT_TYPE:
-            return SingleLineToGroundFault(system, fault_bus, fault_impedance)
+            return SingleLineToGroundFault(system, fault_bus, fault_type, fault_impedance)
         elif fault_type == LINE_TO_LINE_FAULT_TYPE:
-            return LineToLineFault(system, fault_bus, fault_impedance)
+            return LineToLineFault(system, fault_bus, fault_type, fault_impedance)
         elif fault_type == DOUBLE_LINE_TO_GROUND_FAULT_TYPE:
-            return DoubleLineToGroundFault(system, fault_bus, fault_impedance)
+            return DoubleLineToGroundFault(system, fault_bus, fault_type, fault_impedance)
 
-        return None
+        raise ValueError()
 
 
 class Fault:
-    def __init__(self, system, fault_bus_number, fault_impedance):
-        self.fault_bus_number = fault_bus_number
+    def __init__(self, system, fault_bus_number, fault_type, fault_impedance):
         self._system = system
+        self._fault_bus_number = fault_bus_number
+        self._fault_type = fault_type.upper()
         self._fault_impedance = fault_impedance
-
         self._prefault_voltage = system.buses[fault_bus_number - 1].voltage
         self._impedance_matrix_0 = np.linalg.inv(system.admittance_matrix_0())
         self._impedance_matrix_1 = np.linalg.inv(system.admittance_matrix_1())
@@ -35,6 +35,14 @@ class Fault:
         self._impedance_0 = self._impedance_matrix_0[fault_bus_number - 1][fault_bus_number - 1]
         self._impedance_1 = self._impedance_matrix_1[fault_bus_number - 1][fault_bus_number - 1]
         self._impedance_2 = self._impedance_matrix_2[fault_bus_number - 1][fault_bus_number - 1]
+
+    @property
+    def fault_bus_number(self):
+        return self._fault_bus_number
+
+    @property
+    def fault_type(self):
+        return self._fault_type
 
     def sequence_current_0(self):
         raise NotImplementedError()
@@ -76,6 +84,7 @@ class ThreePhaseFault(Fault):
         return 0j
 
     def sequence_current_1(self):
+        # I_1 = V_F / (Z_1 + Z_F)
         return self._prefault_voltage / (self._impedance_1 + self._fault_impedance)
 
     def sequence_current_2(self):
@@ -93,6 +102,7 @@ class ThreePhaseFault(Fault):
 
 class SingleLineToGroundFault(Fault):
     def sequence_current_0(self):
+        # I_0 = V_F / (Z_0 + 3Z_n + Z_1 + Z_2)
         denominator = self._impedance_0 + self._impedance_1 + self._impedance_2 + 3 * self._fault_impedance
         return self._prefault_voltage / denominator
 
@@ -117,6 +127,7 @@ class LineToLineFault(Fault):
         return 0j
 
     def sequence_current_1(self):
+        # I_1 = V_F / (Z_1 + Z_2 + Z_F)
         denominator = self._impedance_1 + self._impedance_2 + self._fault_impedance
         return self._prefault_voltage / denominator
 
@@ -135,15 +146,18 @@ class LineToLineFault(Fault):
 
 class DoubleLineToGroundFault(Fault):
     def sequence_current_0(self):
+        # I_0 = -Z_2 / (Z_0 + 3Z_n + Z_2) * I_1
         current_divider = self._impedance_2 / (self._impedance_0 + 3 * self._fault_impedance + self._impedance_2)
         return -self.sequence_current_1() * current_divider
 
     def sequence_current_1(self):
+        # I_1 = V_F / (Z_1 + Z_2 || (Z_0 + 3Z_n))
         denominator = self._impedance_1 + ((self._impedance_2 * (self._impedance_0 + 3 * self._fault_impedance))
                                            / (self._impedance_2 + self._impedance_0 + 3 * self._fault_impedance))
         return self._prefault_voltage / denominator
 
     def sequence_current_2(self):
+        # I_2 = -I_1 - I_0
         return -self.sequence_current_1() - self.sequence_current_0()
 
     def phase_current_a(self):

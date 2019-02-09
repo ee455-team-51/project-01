@@ -1,5 +1,4 @@
 import argparse
-
 import power_system_fault
 import power_system_builder
 import power_system_fault_reporter
@@ -24,9 +23,9 @@ def parse_arguments():
 
     group = parser.add_argument_group('fault')
     group.add_argument('--fault_type', required=True, choices=['3p', 'slg', 'll', 'dlg'], help='The fault type.')
-    group.add_argument('--fault_bus', required=True, type=int, help='The bus where the fault occurred.')
+    group.add_argument('--fault_bus_number', required=True, type=int, help='The bus where the fault occurred.')
     group.add_argument('--fault_impedance', required=True, type=float, help='The per unit fault impedance.')
-    group.add_argument('--results_bus', required=True, type=int)
+    group.add_argument('--results_bus_number', required=True, type=int)
     return parser.parse_args()
 
 
@@ -38,10 +37,9 @@ def main():
         args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
     fault = power_system_fault.PowerSystemFaultBuilder.build(
-        system, args.fault_type, args.fault_bus, args.fault_impedance)
+        system, args.fault_type, args.fault_bus_number, args.fault_impedance)
 
-    print(power_system_fault_reporter.fault_current_report(fault))
-    print(power_system_fault_reporter.results_bus_report(system, fault, args.results_bus))
+    print(power_system_fault_reporter.report(system, fault, args.results_bus_number))
 
 
 if __name__ == '__main__':
