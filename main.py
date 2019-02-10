@@ -7,6 +7,7 @@ DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
 DEFAULT_BUS_DATA_WORKSHEET_NAME = 'BusData'
 DEFAULT_LINE_DATA_WORKSHEET_NAME = 'LineData'
 DEFAULT_GENERATOR_NEUTRAL_REACTANCE = 0
+DEFAULT_OUTPUT_TABLE_FORMAT = 'simple'
 
 
 def parse_arguments():
@@ -26,6 +27,12 @@ def parse_arguments():
     group.add_argument('--fault_bus_number', required=True, type=int, help='The bus where the fault occurred.')
     group.add_argument('--fault_impedance', required=True, type=float, help='The per unit fault impedance.')
     group.add_argument('--results_bus_number', required=True, type=int)
+
+    group = parser.add_argument_group('output')
+    group.add_argument('--output_table_format', default=DEFAULT_OUTPUT_TABLE_FORMAT, help='The output table format.',
+                       choices=['plain', 'simple', 'github', 'grid', 'fancy_grid', 'pipe', 'orgtbl', 'jira', 'presto',
+                                'psql', 'rst', 'mediawiki', 'moinmoin', 'youtrack', 'html', 'latex', 'latex_raw',
+                                'latex_booktabs', 'textile'])
     return parser.parse_args()
 
 
@@ -39,7 +46,7 @@ def main():
     fault = power_system_fault.PowerSystemFaultBuilder.build(
         system, args.fault_type, args.fault_bus_number, args.fault_impedance)
 
-    print(power_system_fault_reporter.report(system, fault, args.results_bus_number))
+    print(power_system_fault_reporter.report(system, fault, args.results_bus_number, args.output_table_format))
 
 
 if __name__ == '__main__':

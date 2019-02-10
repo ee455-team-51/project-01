@@ -11,7 +11,7 @@ def phase_components(sequence_0, sequence_1, sequence_2):
                                           [1, a, a ** 2]], [sequence_0, sequence_1, sequence_2])]
 
 
-def report(system, fault, results_bus_number):
+def report(system, fault, results_bus_number, output_table_format):
     bus_voltages_0 = fault.bus_voltages_0()
     bus_voltages_1 = fault.bus_voltages_1()
     bus_voltages_2 = fault.bus_voltages_2()
@@ -65,4 +65,4 @@ def report(system, fault, results_bus_number):
     if results_bus.has_generator():
         table.append(['Bus {} Generator'.format(results_bus_number)] + phase_components(i_gen0, i_gen1, i_gen2))
 
-    return tabulate.tabulate(table, headers=headers, floatfmt=TABULATE_FLOAT_FMT)
+    return tabulate.tabulate(table, headers=headers, floatfmt=TABULATE_FLOAT_FMT, tablefmt=output_table_format)
