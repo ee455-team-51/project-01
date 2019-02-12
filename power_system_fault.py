@@ -7,7 +7,7 @@ LINE_TO_LINE_FAULT_TYPE = 'll'
 DOUBLE_LINE_TO_GROUND_FAULT_TYPE = 'dlg'
 
 
-class PowerSystemFaultBuilder:
+class FaultBuilder:
     @staticmethod
     def build(system, fault_type, fault_bus, fault_impedance):
         if fault_type == THREE_PHASE_FAULT_TYPE:
@@ -43,6 +43,9 @@ class Fault:
     @property
     def fault_type(self):
         return self._fault_type
+
+    def fault_current(self):
+        raise NotImplementedError()
 
     def sequence_current_0(self):
         raise NotImplementedError()
@@ -80,6 +83,10 @@ class Fault:
 
 
 class ThreePhaseFault(Fault):
+    def fault_current(self):
+        # I_F = I_a
+        return self.phase_current_a()
+
     def sequence_current_0(self):
         return 0j
 
@@ -101,6 +108,10 @@ class ThreePhaseFault(Fault):
 
 
 class SingleLineToGroundFault(Fault):
+    def fault_current(self):
+        # I_F = I_a
+        return self.phase_current_a()
+
     def sequence_current_0(self):
         # I_0 = V_F / (Z_0 + 3Z_n + Z_1 + Z_2)
         denominator = self._impedance_0 + self._impedance_1 + self._impedance_2 + 3 * self._fault_impedance
@@ -123,6 +134,10 @@ class SingleLineToGroundFault(Fault):
 
 
 class LineToLineFault(Fault):
+    def fault_current(self):
+        # I_F = I_B
+        return self.phase_current_b()
+
     def sequence_current_0(self):
         return 0j
 
@@ -145,6 +160,10 @@ class LineToLineFault(Fault):
 
 
 class DoubleLineToGroundFault(Fault):
+    def fault_current(self):
+        # I_F = I_B + I_C
+        return self.phase_current_b() + self.phase_current_c()
+
     def sequence_current_0(self):
         # I_0 = -Z_2 / (Z_0 + 3Z_n + Z_2) * I_1
         current_divider = self._impedance_2 / (self._impedance_0 + 3 * self._fault_impedance + self._impedance_2)

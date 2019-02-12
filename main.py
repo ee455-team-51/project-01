@@ -43,7 +43,7 @@ def main():
     builder = power_system_builder.ExcelPowerSystemBuilder(
         args.input_workbook, args.bus_data_worksheet, args.line_data_worksheet, generator_neutral_impedance)
     system = builder.build_system()
-    fault = power_system_fault.PowerSystemFaultBuilder.build(
+    fault = power_system_fault.FaultBuilder.build(
         system, args.fault_type, args.fault_bus_number, args.fault_impedance)
 
     print(power_system_fault_reporter.report(system, fault, args.results_bus_number, args.output_table_format))
