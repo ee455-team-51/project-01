@@ -1,6 +1,6 @@
 import argparse
-import power_system_fault
 import power_system_builder
+import power_system_fault
 import power_system_fault_reporter
 
 DEFAULT_INPUT_WORKBOOK = 'data/data.xlsx'
