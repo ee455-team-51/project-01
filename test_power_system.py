@@ -4,7 +4,6 @@ import unittest
 
 
 class TestPowerSystem(unittest.TestCase):
-    @unittest.skip('Skip until it can be determined why load admittances are not used by PowerWorld.')
     def test_admittance_matrix_0(self):
         filename = 'data/data.xlsx'
         builder = power_system_builder.ExcelPowerSystemBuilder(filename, 'BusData', 'LineData', 0)
@@ -14,9 +13,9 @@ class TestPowerSystem(unittest.TestCase):
         expected = [[-10j, 6.67j, 0, 3.33j, 0, 0],
                     [6.67j, -210j, 0, 0, 3.33j, 0],
                     [0, 0, -205.71j, 2.38j, 0, 3.33j],
-                    [3.33j, 0, 2.38j, 12.38j, 6.67j, 0],
-                    [0, 3.33j, 0, 6.67j, -16.67j, 6.67j],
-                    [0, 0, 3.33j, 0, 6.67j, -10j]]
+                    [3.33j, 0, 2.38j, 0.96 - 12.76j, 6.67j, 0],
+                    [0, 3.33j, 0, 6.67j, 0.48 - 16.96j, 6.67j],
+                    [0, 0, 3.33j, 0, 6.67j, 1.07 - 10.39j]]
 
         np.testing.assert_array_almost_equal(actual, expected, 2)
 

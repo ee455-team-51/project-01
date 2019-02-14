@@ -12,7 +12,7 @@ class TestPowerSystem(unittest.TestCase):
         ps = builder.build_system()
         fault = power_system_fault.FaultBuilder.build(ps, '3p', 1, 0)
 
-        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 72.95156, 4)
+        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 72.95155, 4)
         np.testing.assert_almost_equal(np.abs(fault.phase_current_a()), 72.952, 3)
         np.testing.assert_almost_equal(np.abs(fault.phase_current_b()), 72.950, 2)
         np.testing.assert_almost_equal(np.abs(fault.phase_current_c()), 72.950, 2)
@@ -23,8 +23,8 @@ class TestPowerSystem(unittest.TestCase):
         ps = builder.build_system()
         fault = power_system_fault.FaultBuilder.build(ps, 'slg', 2, 0.1)
 
-        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 10.42977, 3)
-        np.testing.assert_almost_equal(np.abs(fault.phase_current_a()), 10.430, 3)
+        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 10.42942, 5)
+        np.testing.assert_almost_equal(np.abs(fault.phase_current_a()), 10.429, 3)
         np.testing.assert_equal(np.abs(fault.phase_current_b()), 0)
         np.testing.assert_equal(np.abs(fault.phase_current_c()), 0)
 
@@ -34,10 +34,10 @@ class TestPowerSystem(unittest.TestCase):
         ps = builder.build_system()
         fault = power_system_fault.FaultBuilder.build(ps, 'll', 4, 0)
 
-        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 20.53347, 2)
+        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 20.53350, 2)
         np.testing.assert_equal(np.abs(fault.phase_current_a()), 0)
-        np.testing.assert_almost_equal(np.abs(fault.phase_current_b()), 20.533, 2)
-        np.testing.assert_almost_equal(np.abs(fault.phase_current_c()), 20.533, 2)
+        np.testing.assert_almost_equal(np.abs(fault.phase_current_b()), 20.533, 3)
+        np.testing.assert_almost_equal(np.abs(fault.phase_current_c()), 20.533, 3)
 
     def test_dlg_fault_currents(self):
         filename = 'data/data.xlsx'
@@ -45,10 +45,10 @@ class TestPowerSystem(unittest.TestCase):
         ps = builder.build_system()
         fault = power_system_fault.FaultBuilder.build(ps, 'dlg', 5, 0.1)
 
-        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 4.48681, 0)
+        np.testing.assert_almost_equal(np.abs(fault.fault_current()), 4.36025, 2)
         np.testing.assert_equal(np.abs(fault.phase_current_a()), 0)
-        np.testing.assert_almost_equal(np.abs(fault.phase_current_b()), 22.275, 0)
-        np.testing.assert_almost_equal(np.abs(fault.phase_current_c()), 18.352, 1)
+        np.testing.assert_almost_equal(np.abs(fault.phase_current_b()), 22.266, 1)
+        np.testing.assert_almost_equal(np.abs(fault.phase_current_c()), 18.351, 1)
 
     def test_3p_fault_currents_hw04p4(self):
         filename = 'data/sample-hw04p4.xlsx'
